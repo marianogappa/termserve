@@ -57,11 +57,13 @@ func backendHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Error reading body: %v", err)
 		w.WriteHeader(400)
+		return
 	}
 	out, err := exec.Command("bash", "-c", string(body)).Output()
 	if err != nil {
 		w.WriteHeader(500)
 		log.Printf("Error running command [%v]: %v", string(body), err)
+		return
 	}
 	log.Printf("Successfully ran command [%v]: %v", string(body), string(out))
 	w.Header().Add("Content-Type", "application/json")
