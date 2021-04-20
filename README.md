@@ -9,7 +9,7 @@
 
 ## Usage
 
-1. Install with `go get https://github.com/marianogappa/termserve`
+1. Install with `go get github.com/marianogappa/termserve`
 2. Create an index.html and serve it with `termserve /path/to/index.html`
 
 ## Template HTML to start with
