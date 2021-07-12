@@ -12,16 +12,18 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", rootHandler)
-	http.HandleFunc("/js_helper", jsHelperHandler)
-	http.HandleFunc("/backend", backendHandler)
-	// if len(os.Args >= 3) {
-	// 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
-	// }
 	port := 8080
 	if len(os.Args) >= 3 {
 		port, _ = strconv.Atoi(os.Args[2])
 	}
+
+	http.HandleFunc("/", rootHandler)
+	http.HandleFunc("/js_helper", jsHelperHandler(port))
+	http.HandleFunc("/backend", backendHandler)
+	// if len(os.Args >= 3) {
+	// 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
+	// }
+
 	http.ListenAndServe(fmt.Sprintf(":%v", port), nil)
 }
 
@@ -29,10 +31,12 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, os.Args[1])
 }
 
-func jsHelperHandler(w http.ResponseWriter, r *http.Request) {
-	jsDeps := `function run(cmd) {
+func jsHelperHandler(port int) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		jsDeps := fmt.Sprintf(`function run(cmd) {
 		return fetch(
-			'http://localhost:8080/backend',
+			'http://localhost:%v/backend',
 			{
 				method: 'POST',
 				body: cmd,
@@ -48,9 +52,10 @@ func jsHelperHandler(w http.ResponseWriter, r *http.Request) {
 	function $(q, v) {
 		document.querySelector(q).innerHTML = v
 	}
-`
-	w.Header().Add("Content-Type", "text/javascript")
-	fmt.Fprint(w, jsDeps)
+`, port)
+		w.Header().Add("Content-Type", "text/javascript")
+		fmt.Fprint(w, jsDeps)
+	}
 }
 
 type response struct {
