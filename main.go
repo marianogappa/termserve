@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strconv"
 )
 
 func main() {
@@ -17,7 +18,11 @@ func main() {
 	// if len(os.Args >= 3) {
 	// 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 	// }
-	http.ListenAndServe(":8080", nil)
+	port := 8080
+	if len(os.Args) >= 3 {
+		port, _ = strconv.Atoi(os.Args[2])
+	}
+	http.ListenAndServe(fmt.Sprintf(":%v", port), nil)
 }
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
