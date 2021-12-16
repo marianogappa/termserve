@@ -75,7 +75,7 @@ func backendHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error running command [%v]: %v", string(body), err)
 		return
 	}
-	log.Printf("Successfully ran command [%v]: %v", string(body), string(out))
+	log.Printf("Successfully ran command [%v]", string(body))
 	w.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response{Stdout: string(out)})
 }
